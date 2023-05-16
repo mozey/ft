@@ -84,23 +84,23 @@ func TestUnmarshalInt(t *testing.T) {
 	b := []byte(`{"int": null}`)
 	err := json.Unmarshal(b, &d)
 	is.NoErr(err)
-	is.Equal(int64(0), d.Int.Int) // Value must match
+	is.Equal(int64(0), d.Int.Int64) // Value must match
 
 	b = []byte(`{}`)
 	err = json.Unmarshal(b, &d)
 	is.NoErr(err)
-	is.Equal(int64(0), d.Int.Int) // Value must match
+	is.Equal(int64(0), d.Int.Int64) // Value must match
 
 	// string
 	b = []byte(`{"int": "123"}`)
 	err = json.Unmarshal(b, &d)
 	is.NoErr(err)
-	is.Equal(int64(123), d.Int.Int) // Value must match
+	is.Equal(int64(123), d.Int.Int64) // Value must match
 
 	b = []byte(`{"int": "-123"}`)
 	err = json.Unmarshal(b, &d)
 	is.NoErr(err)
-	is.Equal(int64(-123), d.Int.Int) // Value must match
+	is.Equal(int64(-123), d.Int.Int64) // Value must match
 
 	b = []byte(`{"int": "abc"}`)
 	err = json.Unmarshal(b, &d)
@@ -110,13 +110,13 @@ func TestUnmarshalInt(t *testing.T) {
 	b = []byte(`{"int": -123}`)
 	err = json.Unmarshal(b, &d)
 	is.NoErr(err)
-	is.Equal(int64(-123), d.Int.Int) // Value must match
+	is.Equal(int64(-123), d.Int.Int64) // Value must match
 
 	// float
 	b = []byte(`{"int": -123.456}`)
 	err = json.Unmarshal(b, &d)
 	is.NoErr(err)
-	is.Equal(int64(-123), d.Int.Int) // Value must match
+	is.Equal(int64(-123), d.Int.Int64) // Value must match
 
 	// bool
 	b = []byte(`{"int": true}`)
@@ -136,23 +136,23 @@ func TestUnmarshalFloat(t *testing.T) {
 	b := []byte(`{"float": null}`)
 	err := json.Unmarshal(b, &d)
 	is.NoErr(err)
-	is.Equal(float64(0), d.Float.Float) // Value must match
+	is.Equal(float64(0), d.Float.Float64) // Value must match
 
 	b = []byte(`{}`)
 	err = json.Unmarshal(b, &d)
 	is.NoErr(err)
-	is.Equal(float64(0), d.Float.Float) // Value must match
+	is.Equal(float64(0), d.Float.Float64) // Value must match
 
 	// string
 	b = []byte(`{"float": "1.618"}`)
 	err = json.Unmarshal(b, &d)
 	is.NoErr(err)
-	is.Equal(float64(1.618), d.Float.Float) // Value must match
+	is.Equal(float64(1.618), d.Float.Float64) // Value must match
 
 	b = []byte(`{"float": "-1.618"}`)
 	err = json.Unmarshal(b, &d)
 	is.NoErr(err)
-	is.Equal(float64(-1.618), d.Float.Float) // Value must match
+	is.Equal(float64(-1.618), d.Float.Float64) // Value must match
 
 	b = []byte(`{"float": "abc"}`)
 	err = json.Unmarshal(b, &d)
@@ -162,13 +162,13 @@ func TestUnmarshalFloat(t *testing.T) {
 	b = []byte(`{"float": -1}`)
 	err = json.Unmarshal(b, &d)
 	is.NoErr(err)
-	is.Equal(float64(-1), d.Float.Float) // Value must match
+	is.Equal(float64(-1), d.Float.Float64) // Value must match
 
 	// float
 	b = []byte(`{"float": -1.618}`)
 	err = json.Unmarshal(b, &d)
 	is.NoErr(err)
-	is.Equal(float64(-1.618), d.Float.Float) // Value must match
+	is.Equal(float64(-1.618), d.Float.Float64) // Value must match
 
 	// bool
 	b = []byte(`{"float": true}`)

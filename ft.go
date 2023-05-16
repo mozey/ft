@@ -72,17 +72,17 @@ func (fs *String) UnmarshalJSON(bArr []byte) (err error) {
 // Strings that are not valid representation of a number will error.
 // Boolean values will error
 type Int struct {
-	Int   int64
+	Int64 int64
 	Valid bool // Always true
 }
 
 func IntFrom(fi int64) Int {
-	return Int{Int: fi, Valid: true}
+	return Int{Int64: fi, Valid: true}
 }
 
 // MarshalJSON method for Int
 func (fi Int) MarshalJSON() ([]byte, error) {
-	return []byte(strconv.FormatInt(fi.Int, 10)), nil
+	return []byte(strconv.FormatInt(fi.Int64, 10)), nil
 }
 
 // UnmarshalJSON method for Int
@@ -134,17 +134,17 @@ func (fi *Int) UnmarshalJSON(bArr []byte) (err error) {
 // Strings that are not valid representation of a number will error.
 // Boolean values will error
 type Float struct {
-	Float float64
-	Valid bool // Always true
+	Float64 float64
+	Valid   bool // Always true
 }
 
 func FloatFrom(ff float64) Float {
-	return Float{Float: ff, Valid: true}
+	return Float{Float64: ff, Valid: true}
 }
 
 // MarshalJSON method for Float
 func (ff Float) MarshalJSON() ([]byte, error) {
-	return []byte(strconv.FormatFloat(ff.Float, 'f', -1, 64)), nil
+	return []byte(strconv.FormatFloat(ff.Float64, 'f', -1, 64)), nil
 }
 
 // UnmarshalJSON method for Float
