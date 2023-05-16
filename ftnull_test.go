@@ -1,8 +1,10 @@
 package ft_test
 
 import (
+	"bytes"
 	"encoding/json"
 	"testing"
+	"text/template"
 	"unicode"
 
 	"github.com/guregu/null"
@@ -469,4 +471,38 @@ func TestNMarshalToJSON(t *testing.T) {
 	b, err = json.Marshal(d2)
 	is.NoErr(err)
 	is.Equal(`{"string":null,"int":null,"bool":null,"float":null}`, string(b))
+}
+
+func TestNTextTemplate(t *testing.T) {
+	is := is.New(t)
+
+	type data struct {
+		Name        ft.NString
+		Number      ft.NInt
+		Active      ft.NBool
+		Measurement ft.NFloat
+	}
+
+	tpl := template.Must(template.New("tpl").Parse(`
+{{if .Name.Valid }}Name: {{.Name.String}}{{end}}
+{{if .Number.Valid }}Number: {{.Number.Int64}}{{end}}
+{{if .Active.Valid }}Active: {{.Active.Bool}}{{end}}
+{{if .Measurement.Valid }}Measurement: {{.Measurement.Float64}}{{end}}`))
+
+	buf := bytes.NewBufferString("")
+	d := data{
+		Name:        ft.NStringFrom("John Doe"),
+		Number:      ft.NIntFrom(123),
+		Active:      ft.NBoolFrom(true),
+		Measurement: ft.NFloatFrom(1.618),
+	}
+	is.Equal(true, d.Number.Valid)
+	err := tpl.Execute(buf, d)
+	is.NoErr(err)
+
+	is.Equal(buf.String(), `
+Name: John Doe
+Number: 123
+Active: true
+Measurement: 1.618`)
 }
