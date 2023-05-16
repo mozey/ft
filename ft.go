@@ -10,51 +10,58 @@ import (
 )
 
 // String can be used to decode any JSON value to string
-type String string
+type String struct {
+	String string
+	Valid  bool // Always true
+}
+
+func StringFrom(fs string) String {
+	return String{String: fs, Valid: true}
+}
 
 // MarshalJSON method with value receiver for String
 // Method must not have a pointer receiver!
 // See https://stackoverflow.com/a/21394657/639133
-func (ns String) MarshalJSON() ([]byte, error) {
+func (fs String) MarshalJSON() ([]byte, error) {
 	// Control characters like "Start of Text" \u0002 breaks MarshalJSON
 	// after calling Quote and wrapping the string with RawMessage.
 	// First call Clean to remove non-graphic characters (except newline)
-	return json.RawMessage(strconv.Quote(Clean(string(ns)))), nil
+	return json.RawMessage(strconv.Quote(Clean(fs.String))), nil
 }
 
 // UnmarshalJSON for String
-func (ns *String) UnmarshalJSON(bArr []byte) (err error) {
+func (fs *String) UnmarshalJSON(bArr []byte) (err error) {
 	s, i, f, b :=
 		"", uint64(0), float64(0), false
 
 	// Value is null
 	if string(bArr) == "null" {
-		*ns = ""
+		*fs = StringFrom("")
 		return
 	}
 
 	// Value is a...
 	// string
 	if err = json.Unmarshal(bArr, &s); err == nil {
-		*ns = String(s)
+		*fs = StringFrom(s)
 		return
 	}
 
 	// int
 	if err = json.Unmarshal(bArr, &i); err == nil {
-		*ns = String(bArr[:])
+		*fs = StringFrom(string(bArr[:]))
 		return
 	}
 
 	// float
 	if err = json.Unmarshal(bArr, &f); err == nil {
-		*ns = String(bArr[:])
+		*fs = StringFrom(string(bArr[:]))
 		return
 	}
 
 	// bool
 	if err = json.Unmarshal(bArr, &b); err == nil {
-		*ns = String(bArr[:])
+		*fs = StringFrom(string(bArr[:]))
 		return
 	}
 
@@ -64,21 +71,28 @@ func (ns *String) UnmarshalJSON(bArr []byte) (err error) {
 // Int can be used to decode any JSON value to int64.
 // Strings that are not valid representation of a number will error.
 // Boolean values will error
-type Int int64
+type Int struct {
+	Int   int64
+	Valid bool // Always true
+}
+
+func IntFrom(fi int64) Int {
+	return Int{Int: fi, Valid: true}
+}
 
 // MarshalJSON method for Int
-func (ni Int) MarshalJSON() ([]byte, error) {
-	return []byte(strconv.FormatInt(int64(ni), 10)), nil
+func (fi Int) MarshalJSON() ([]byte, error) {
+	return []byte(strconv.FormatInt(fi.Int, 10)), nil
 }
 
 // UnmarshalJSON method for Int
-func (ni *Int) UnmarshalJSON(bArr []byte) (err error) {
+func (fi *Int) UnmarshalJSON(bArr []byte) (err error) {
 	s, i, f, b :=
 		"", int64(0), float64(0), false
 
 	// Value is null
 	if string(bArr) == "null" {
-		*ni = Int(0)
+		*fi = IntFrom(0)
 		return
 	}
 
@@ -88,28 +102,28 @@ func (ni *Int) UnmarshalJSON(bArr []byte) (err error) {
 		i, err2 := strconv.ParseInt(s, 10, 64)
 		if err2 != nil {
 			// Value is null if int could not be parsed from the string
-			//*ni = Int(0) // This is not a good idea...
+			//*fi = Int(0) // This is not a good idea...
 			return err2
 		}
-		*ni = Int(i)
+		*fi = IntFrom(i)
 		return
 	}
 
 	// int
 	if err = json.Unmarshal(bArr, &i); err == nil {
-		*ni = Int(i)
+		*fi = IntFrom(i)
 		return
 	}
 
 	// float
 	if err = json.Unmarshal(bArr, &f); err == nil {
-		*ni = Int(int64(f))
+		*fi = IntFrom(int64(f))
 		return
 	}
 
 	// bool
 	if err = json.Unmarshal(bArr, &b); err == nil {
-		//*ni = Int(0) // This is not a good idea...
+		//*fi = Int(0) // This is not a good idea...
 		return errors.WithStack(fmt.Errorf("value is a bool"))
 	}
 
@@ -119,21 +133,28 @@ func (ni *Int) UnmarshalJSON(bArr []byte) (err error) {
 // Float can be used to decode any JSON value to int64.
 // Strings that are not valid representation of a number will error.
 // Boolean values will error
-type Float float64
+type Float struct {
+	Float float64
+	Valid bool // Always true
+}
+
+func FloatFrom(ff float64) Float {
+	return Float{Float: ff, Valid: true}
+}
 
 // MarshalJSON method for Float
-func (nf Float) MarshalJSON() ([]byte, error) {
-	return []byte(strconv.FormatFloat(float64(nf), 'f', -1, 64)), nil
+func (ff Float) MarshalJSON() ([]byte, error) {
+	return []byte(strconv.FormatFloat(ff.Float, 'f', -1, 64)), nil
 }
 
 // UnmarshalJSON method for Float
-func (nf *Float) UnmarshalJSON(bArr []byte) (err error) {
+func (ff *Float) UnmarshalJSON(bArr []byte) (err error) {
 	s, i, f, b :=
 		"", int64(0), float64(0), false
 
 	// Value is null
 	if string(bArr) == "null" {
-		*nf = Float(0)
+		*ff = FloatFrom(0)
 		return
 	}
 
@@ -143,28 +164,28 @@ func (nf *Float) UnmarshalJSON(bArr []byte) (err error) {
 		i, err2 := strconv.ParseFloat(s, 64)
 		if err2 != nil {
 			// Value is null if int could not be parsed from the string
-			//*ni = Float(0) // This is not a good idea...
+			//*fi = Float(0) // This is not a good idea...
 			return err2
 		}
-		*nf = Float(i)
+		*ff = FloatFrom(i)
 		return
 	}
 
 	// int
 	if err = json.Unmarshal(bArr, &i); err == nil {
-		*nf = Float(i)
+		*ff = FloatFrom(float64(i))
 		return
 	}
 
 	// float
 	if err = json.Unmarshal(bArr, &f); err == nil {
-		*nf = Float(f)
+		*ff = FloatFrom(f)
 		return
 	}
 
 	// bool
 	if err = json.Unmarshal(bArr, &b); err == nil {
-		//*nf = Float(0) // This is not a good idea...
+		//*ff = Float(0) // This is not a good idea...
 		return errors.WithStack(fmt.Errorf("value is a bool"))
 	}
 
@@ -176,21 +197,28 @@ func (nf *Float) UnmarshalJSON(bArr []byte) (err error) {
 // all other strings are true.
 // Numbers equal to 0 will evaluate to false,
 // all other numbers are true.
-type Bool bool
+type Bool struct {
+	Bool  bool
+	Valid bool // Always true
+}
+
+func BoolFrom(fb bool) Bool {
+	return Bool{Bool: fb, Valid: true}
+}
 
 // MarshalJSON method for Bool
-func (nb Bool) MarshalJSON() ([]byte, error) {
-	return []byte(strconv.FormatBool(bool(nb))), nil
+func (fb Bool) MarshalJSON() ([]byte, error) {
+	return []byte(strconv.FormatBool(fb.Bool)), nil
 }
 
 // UnmarshalJSON method for Bool
-func (nb *Bool) UnmarshalJSON(bArr []byte) (err error) {
+func (fb *Bool) UnmarshalJSON(bArr []byte) (err error) {
 	s, i, f, b :=
 		"", int64(0), float64(0), false
 
 	// Value is null
 	if string(bArr) == "null" {
-		*nb = false
+		*fb = BoolFrom(false)
 		return
 	}
 
@@ -199,36 +227,36 @@ func (nb *Bool) UnmarshalJSON(bArr []byte) (err error) {
 	if err = json.Unmarshal(bArr, &s); err == nil {
 		compare := strings.ToLower(strings.TrimSpace(s))
 		if compare == "false" || compare == "0" || compare == "" {
-			*nb = false
+			*fb = BoolFrom(false)
 			return
 		}
-		*nb = true
+		*fb = BoolFrom(true)
 		return
 	}
 
 	// int
 	if err = json.Unmarshal(bArr, &i); err == nil {
 		if i == 0 {
-			*nb = false
+			*fb = BoolFrom(false)
 			return
 		}
-		*nb = true
+		*fb = BoolFrom(true)
 		return
 	}
 
 	// float
 	if err = json.Unmarshal(bArr, &f); err == nil {
 		if f == 0 {
-			*nb = false
+			*fb = BoolFrom(false)
 			return
 		}
-		*nb = true
+		*fb = BoolFrom(true)
 		return
 	}
 
 	// bool
 	if err = json.Unmarshal(bArr, &b); err == nil {
-		*nb = Bool(b)
+		*fb = BoolFrom(b)
 		return
 	}
 
