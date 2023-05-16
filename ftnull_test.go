@@ -10,11 +10,11 @@ import (
 	"github.com/mozey/ft"
 )
 
-func TestUnmarshalNullString(t *testing.T) {
+func TestUnmarshalNString(t *testing.T) {
 	is := is.New(t)
 
 	type Data struct {
-		String ft.NullString `json:"string"`
+		String ft.NString `json:"string"`
 	}
 	d := Data{}
 
@@ -84,57 +84,57 @@ func TestUnmarshalNullString(t *testing.T) {
 	is.Equal("false", d.String.String) // Value must match
 }
 
-func TestMarshalNullString(t *testing.T) {
+func TestMarshalNString(t *testing.T) {
 	is := is.New(t)
 
 	type Data struct {
-		String ft.NullString `json:"string"`
+		String ft.NString `json:"string"`
 	}
 	d := Data{}
 
 	// Unicode escape sequence
-	d.String = ft.StringFrom("[bla] bla \u0026 bla")
+	d.String = ft.NStringFrom("[bla] bla \u0026 bla")
 	b, err := json.Marshal(d)
 	is.NoErr(err)
 	is.Equal(`{"string":"[bla] bla \u0026 bla"}`, string(b))
 
-	d.String = ft.StringFrom("foo\u0002bar")
+	d.String = ft.NStringFrom("foo\u0002bar")
 	b, err = json.Marshal(d)
 	is.NoErr(err)
 	is.Equal(`{"string":"foobar"}`, string(b))
 
 	// Slashes
-	d.String = ft.StringFrom("bla bla\\bla bla")
+	d.String = ft.NStringFrom("bla bla\\bla bla")
 	b, err = json.Marshal(d)
 	is.NoErr(err)
 	is.Equal(`{"string":"bla bla\\bla bla"}`, string(b))
 
 	// JSON inside string
-	d.String = ft.StringFrom(`{"O":1}`)
+	d.String = ft.NStringFrom(`{"O":1}`)
 	b, err = json.Marshal(d)
 	is.NoErr(err)
 	is.Equal(`{"string":"{\"O\":1}"}`, string(b))
 
 	// Escaped JSON inside string
-	d.String = ft.StringFrom(`{\"O\":1}`)
+	d.String = ft.NStringFrom(`{\"O\":1}`)
 	b, err = json.Marshal(d)
 	is.NoErr(err)
 	is.Equal(`{"string":"{\\\"O\\\":1}"}`, string(b))
 
 	// Escape characters
-	d.String = ft.StringFrom("First line\nSecond line")
+	d.String = ft.NStringFrom("First line\nSecond line")
 	b, err = json.Marshal(d)
 	is.NoErr(err)
 	is.Equal(`{"string":"First line\nSecond line"}`, string(b))
 
 	// HTML
-	d.String = ft.StringFrom("<h3>Hello</h3>")
+	d.String = ft.NStringFrom("<h3>Hello</h3>")
 	b, err = json.Marshal(d)
 	is.NoErr(err)
 	is.Equal(`{"string":"\u003ch3\u003eHello\u003c/h3\u003e"}`, string(b))
 
 	// Space characters
-	d.String = ft.StringFrom("Ascii: , Non-breaking:\u00A0, Tab:\t")
+	d.String = ft.NStringFrom("Ascii: , Non-breaking:\u00A0, Tab:\t")
 	b, err = json.Marshal(d)
 	is.NoErr(err)
 	// Note non-numeric chars in the unicode escape sequence is lowercased
@@ -146,11 +146,11 @@ func TestMarshalNullString(t *testing.T) {
 	is.Equal("\t", ft.Clean("\t"))
 }
 
-func TestUnmarshalNullInt(t *testing.T) {
+func TestUnmarshalNInt(t *testing.T) {
 	is := is.New(t)
 
 	type Data struct {
-		Int ft.NullInt `json:"int"`
+		Int ft.NInt `json:"int"`
 	}
 	d := Data{}
 
@@ -218,11 +218,11 @@ func TestUnmarshalNullInt(t *testing.T) {
 	is.Equal(int64(0), d.Int.Int64) // Value must match
 }
 
-func TestUnmarshalNullFloat(t *testing.T) {
+func TestUnmarshalNFloat(t *testing.T) {
 	is := is.New(t)
 
 	type Data struct {
-		Float ft.NullFloat `json:"float"`
+		Float ft.NFloat `json:"float"`
 	}
 	d := Data{}
 
@@ -276,11 +276,11 @@ func TestUnmarshalNullFloat(t *testing.T) {
 	is.Equal("value is a bool", err.Error())
 }
 
-func TestUnmarshalNullBool(t *testing.T) {
+func TestUnmarshalNBool(t *testing.T) {
 	is := is.New(t)
 
 	type Data struct {
-		Bool ft.NullBool `json:"bool"`
+		Bool ft.NBool `json:"bool"`
 	}
 	d := Data{}
 
@@ -380,53 +380,53 @@ func TestUnmarshalNullBool(t *testing.T) {
 	is.Equal(true, d.Bool.Bool)  // Value must match
 }
 
-func TestNullMarshalToJSON(t *testing.T) {
+func TestNMarshalToJSON(t *testing.T) {
 	is := is.New(t)
 
 	type Data struct {
-		String ft.NullString `json:"string"`
-		Int    ft.NullInt    `json:"int"`
-		Bool   ft.NullBool   `json:"bool"`
-		Float  ft.NullFloat  `json:"float"`
+		String ft.NString `json:"string"`
+		Int    ft.NInt    `json:"int"`
+		Bool   ft.NBool   `json:"bool"`
+		Float  ft.NFloat  `json:"float"`
 	}
 
 	// Valid is empty (false) by default,
 	// invalid values marshal to null
 	d := Data{}
-	d.String = ft.NullString{}
-	d.Int = ft.NullInt{}
-	d.Bool = ft.NullBool{}
-	d.Float = ft.NullFloat{}
+	d.String = ft.NString{}
+	d.Int = ft.NInt{}
+	d.Bool = ft.NBool{}
+	d.Float = ft.NFloat{}
 	b, err := json.Marshal(d)
 	is.NoErr(err)
 	is.Equal(`{"string":null,"int":null,"bool":null,"float":null}`, string(b))
 
 	d = Data{}
 	// Alternative instantiation, but the effect is the same as above
-	d.String = ft.NullString(null.String{})
-	d.Int = ft.NullInt(null.Int{})
-	d.Bool = ft.NullBool(null.Bool{})
-	d.Float = ft.NullFloat(null.Float{})
+	d.String = ft.NString(null.String{})
+	d.Int = ft.NInt(null.Int{})
+	d.Bool = ft.NBool(null.Bool{})
+	d.Float = ft.NFloat(null.Float{})
 	b, err = json.Marshal(d)
 	is.NoErr(err)
 	is.Equal(`{"string":null,"int":null,"bool":null,"float":null}`, string(b))
 
 	// Valid values marshal to the corresponding JSON value
 	d = Data{}
-	d.String = ft.StringFrom("foo")
-	d.Int = ft.IntFrom(123)
-	d.Bool = ft.BoolFrom(true)
-	d.Float = ft.FloatFrom(1.618)
+	d.String = ft.NStringFrom("foo")
+	d.Int = ft.NIntFrom(123)
+	d.Bool = ft.NBoolFrom(true)
+	d.Float = ft.NFloatFrom(1.618)
 	b, err = json.Marshal(d)
 	is.NoErr(err)
 	is.Equal(`{"string":"foo","int":123,"bool":true,"float":1.618}`, string(b))
 
 	// Empty values are valid
 	d = Data{}
-	d.String = ft.StringFrom("")
-	d.Int = ft.IntFrom(0)
-	d.Bool = ft.BoolFrom(false)
-	d.Float = ft.FloatFrom(0)
+	d.String = ft.NStringFrom("")
+	d.Int = ft.NIntFrom(0)
+	d.Bool = ft.NBoolFrom(false)
+	d.Float = ft.NFloatFrom(0)
 	b, err = json.Marshal(d)
 	is.NoErr(err)
 	is.Equal(`{"string":"","int":0,"bool":false,"float":0}`, string(b))
@@ -456,12 +456,12 @@ func TestNullMarshalToJSON(t *testing.T) {
 	type Data2 struct {
 		// Note omitempty is not "omitnull",
 		// both empty and null will be omitted
-		StringEmpty string        `json:"string_empty,omitempty"`
-		StringNull  string        `json:"string_null,omitempty"`
-		String      ft.NullString `json:"string,omitempty"`
-		Int         ft.NullInt    `json:"int,omitempty"`
-		Bool        ft.NullBool   `json:"bool,omitempty"`
-		Float       ft.NullFloat  `json:"float,omitempty"`
+		StringEmptyTag string     `json:"string_empty,omitempty"`
+		StringNullTag  string     `json:"string_null,omitempty"`
+		String         ft.NString `json:"string,omitempty"`
+		Int            ft.NInt    `json:"int,omitempty"`
+		Bool           ft.NBool   `json:"bool,omitempty"`
+		Float          ft.NFloat  `json:"float,omitempty"`
 	}
 	d2 := Data2{}
 	err = json.Unmarshal([]byte("{}"), &d2)
