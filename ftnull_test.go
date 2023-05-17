@@ -544,23 +544,23 @@ func TestNMapKeys(t *testing.T) {
 	d.StringMap[ft.NString{sql.NullString{String: "", Valid: false}}] = true
 	_, err = json.Marshal(d)
 	is.Equal(err.Error(),
-		wrap("NString", "invalid ft.NString")) // Only valid values can be keys
+		wrap("NString", "invalid ft.NString")) // Map keys must be valid
 
 	d = data{IntMap: make(map[ft.NInt]bool)}
 	d.IntMap[ft.NInt{sql.NullInt64{Int64: 0, Valid: false}}] = true
 	_, err = json.Marshal(d)
 	is.Equal(err.Error(),
-		wrap("NInt", "invalid ft.NInt")) // Only valid values can be keys
+		wrap("NInt", "invalid ft.NInt")) // Map keys must be valid
 
 	d = data{FloatMap: make(map[ft.NFloat]bool)}
 	d.FloatMap[ft.NFloat{sql.NullFloat64{Float64: 0, Valid: false}}] = true
 	_, err = json.Marshal(d)
 	is.Equal(err.Error(),
-		wrap("NFloat", "invalid ft.NFloat")) // Only valid values can be keys
+		wrap("NFloat", "invalid ft.NFloat")) // Map keys must be valid
 
 	d = data{BoolMap: make(map[ft.NBool]bool)}
 	d.BoolMap[ft.NBool{sql.NullBool{Bool: false, Valid: false}}] = true
 	_, err = json.Marshal(d)
 	is.Equal(err.Error(),
-		wrap("NBool", "invalid ft.NBool")) // Only valid values can be keys
+		wrap("NBool", "invalid ft.NBool")) // Map keys must be valid
 }

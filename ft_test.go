@@ -392,23 +392,42 @@ func TestMapKeys(t *testing.T) {
 	d.StringMap[ft.String{String: "", Valid: false}] = true
 	_, err = json.Marshal(d)
 	is.Equal(err.Error(),
-		wrap("String", "invalid ft.String")) // Only valid values can be keys
+		wrap("String", "invalid ft.String")) // Map keys must be valid
 
 	d = data{IntMap: make(map[ft.Int]bool)}
 	d.IntMap[ft.Int{Int64: 0, Valid: false}] = true
 	_, err = json.Marshal(d)
 	is.Equal(err.Error(),
-		wrap("Int", "invalid ft.Int")) // Only valid values can be keys
+		wrap("Int", "invalid ft.Int")) // Map keys must be valid
 
 	d = data{FloatMap: make(map[ft.Float]bool)}
 	d.FloatMap[ft.Float{Float64: 0, Valid: false}] = true
 	_, err = json.Marshal(d)
 	is.Equal(err.Error(),
-		wrap("Float", "invalid ft.Float")) // Only valid values can be keys
+		wrap("Float", "invalid ft.Float")) // Map keys must be valid
 
 	d = data{BoolMap: make(map[ft.Bool]bool)}
 	d.BoolMap[ft.Bool{Bool: false, Valid: false}] = true
 	_, err = json.Marshal(d)
 	is.Equal(err.Error(),
-		wrap("Bool", "invalid ft.Bool")) // Only valid values can be keys
+		wrap("Bool", "invalid ft.Bool")) // Map keys must be valid
+
+	type data2 struct {
+		String ft.String
+		Int    ft.Int
+		Bool   ft.Bool
+		Float  ft.Float
+	}
+	d2 := data2{
+		String: ft.String{String: "foo", Valid: false},
+		Int:    ft.Int{Int64: 123, Valid: false},
+		Bool:   ft.Bool{Bool: false, Valid: false},
+		Float:  ft.Float{Float64: 1.618, Valid: false},
+	}
+	b, err = json.Marshal(d2)
+	is.NoErr(err)
+	is.Equal(
+		string(b),
+		`{"String":"foo","Int":123,"Bool":false,"Float":1.618}`,
+	) // Invalid values are marshalled to JSON
 }
