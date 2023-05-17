@@ -312,7 +312,7 @@ func (fb *NBool) UnmarshalJSON(bArr []byte) (err error) {
 
 func (fb NBool) MarshalText() (text []byte, err error) {
 	if !fb.Valid {
-		return text, errors.Errorf("invalid ft.NFloat")
+		return text, errors.Errorf("invalid ft.NBool")
 	}
 	return []byte(strconv.FormatBool(fb.Bool)), nil
 }

@@ -2,7 +2,9 @@ package ft_test
 
 import (
 	"bytes"
+	"database/sql"
 	"encoding/json"
+	"fmt"
 	"testing"
 	"text/template"
 	"unicode"
@@ -532,4 +534,33 @@ func TestNMapKeys(t *testing.T) {
 	is.NoErr(err)
 
 	is.Equal(string(b), `{"StringMap":{"foo":true},"IntMap":{"123":true},"BoolMap":{"true":true},"FloatMap":{"1.618":true}}`)
+
+	wrap := func(s1, s2 string) string {
+		return fmt.Sprintf(
+			`json: encoding error for type "map[ft.%s]bool": "%s"`, s1, s2)
+	}
+
+	d = data{StringMap: make(map[ft.NString]bool)}
+	d.StringMap[ft.NString{sql.NullString{String: "", Valid: false}}] = true
+	_, err = json.Marshal(d)
+	is.Equal(err.Error(),
+		wrap("NString", "invalid ft.NString")) // Only valid values can be keys
+
+	d = data{IntMap: make(map[ft.NInt]bool)}
+	d.IntMap[ft.NInt{sql.NullInt64{Int64: 0, Valid: false}}] = true
+	_, err = json.Marshal(d)
+	is.Equal(err.Error(),
+		wrap("NInt", "invalid ft.NInt")) // Only valid values can be keys
+
+	d = data{FloatMap: make(map[ft.NFloat]bool)}
+	d.FloatMap[ft.NFloat{sql.NullFloat64{Float64: 0, Valid: false}}] = true
+	_, err = json.Marshal(d)
+	is.Equal(err.Error(),
+		wrap("NFloat", "invalid ft.NFloat")) // Only valid values can be keys
+
+	d = data{BoolMap: make(map[ft.NBool]bool)}
+	d.BoolMap[ft.NBool{sql.NullBool{Bool: false, Valid: false}}] = true
+	_, err = json.Marshal(d)
+	is.Equal(err.Error(),
+		wrap("NBool", "invalid ft.NBool")) // Only valid values can be keys
 }
