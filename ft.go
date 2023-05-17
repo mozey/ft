@@ -68,6 +68,12 @@ func (fs *String) UnmarshalJSON(bArr []byte) (err error) {
 	return
 }
 
+// MarshalText must be implemented for custom types to be used as JSON map keys
+// https://stackoverflow.com/a/52161688/639133
+func (fs String) MarshalText() (text []byte, err error) {
+	return []byte(fs.String), nil
+}
+
 // Int can be used to decode any JSON value to int64.
 // Strings that are not valid representation of a number will error.
 // Boolean values will error
@@ -130,6 +136,10 @@ func (fi *Int) UnmarshalJSON(bArr []byte) (err error) {
 	return
 }
 
+func (fi Int) MarshalText() (text []byte, err error) {
+	return []byte(strconv.FormatInt(fi.Int64, 10)), nil
+}
+
 // Float can be used to decode any JSON value to int64.
 // Strings that are not valid representation of a number will error.
 // Boolean values will error
@@ -190,6 +200,10 @@ func (ff *Float) UnmarshalJSON(bArr []byte) (err error) {
 	}
 
 	return
+}
+
+func (ff Float) MarshalText() (text []byte, err error) {
+	return []byte(strconv.FormatFloat(ff.Float64, 'f', -1, 64)), nil
 }
 
 // Bool can be used to decode any JSON value to bool.
@@ -261,4 +275,8 @@ func (fb *Bool) UnmarshalJSON(bArr []byte) (err error) {
 	}
 
 	return
+}
+
+func (fb Bool) MarshalText() (text []byte, err error) {
+	return []byte(strconv.FormatBool(fb.Bool)), nil
 }

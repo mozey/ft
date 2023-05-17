@@ -355,3 +355,30 @@ Number: 123
 Active: true
 Measurement: 1.618`)
 }
+
+// TestMapKeys verifies custom types implement encoding.TextMarshaler
+func TestMapKeys(t *testing.T) {
+	is := is.New(t)
+
+	type data struct {
+		StringMap map[ft.String]bool
+		IntMap    map[ft.Int]bool
+		BoolMap   map[ft.Bool]bool
+		FloatMap  map[ft.Float]bool
+	}
+	d := data{
+		StringMap: make(map[ft.String]bool),
+		IntMap:    make(map[ft.Int]bool),
+		BoolMap:   make(map[ft.Bool]bool),
+		FloatMap:  make(map[ft.Float]bool),
+	}
+	d.StringMap[ft.StringFrom("foo")] = true
+	d.IntMap[ft.IntFrom(123)] = true
+	d.BoolMap[ft.BoolFrom(true)] = true
+	d.FloatMap[ft.FloatFrom(1.618)] = true
+
+	b, err := json.Marshal(d)
+	is.NoErr(err)
+
+	is.Equal(string(b), `{"StringMap":{"foo":true},"IntMap":{"123":true},"BoolMap":{"true":true},"FloatMap":{"1.618":true}}`)
+}

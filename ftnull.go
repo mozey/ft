@@ -84,6 +84,15 @@ func (fs *NString) UnmarshalJSON(bArr []byte) (err error) {
 	return
 }
 
+// MarshalText must be implemented for custom types to be used as JSON map keys
+// https://stackoverflow.com/a/52161688/639133
+func (fs NString) MarshalText() (text []byte, err error) {
+	if !fs.Valid {
+		return text, errors.Errorf("invalid ft.NString")
+	}
+	return []byte(fs.String), nil
+}
+
 // NInt can be used to decode any JSON value to int64.
 // Strings that are not valid representation of a number will error.
 // Boolean values will error
@@ -157,6 +166,13 @@ func (fi *NInt) UnmarshalJSON(bArr []byte) (err error) {
 	return
 }
 
+func (fi NInt) MarshalText() (text []byte, err error) {
+	if !fi.Valid {
+		return text, errors.Errorf("invalid ft.NInt")
+	}
+	return []byte(strconv.FormatInt(fi.Int64, 10)), nil
+}
+
 // NFloat can be used to decode any JSON value to int64.
 // Strings that are not valid representation of a number will error.
 // Boolean values will error
@@ -214,6 +230,13 @@ func (fi *NFloat) UnmarshalJSON(bArr []byte) (err error) {
 	}
 
 	return
+}
+
+func (ff NFloat) MarshalText() (text []byte, err error) {
+	if !ff.Valid {
+		return text, errors.Errorf("invalid ft.NFloat")
+	}
+	return []byte(strconv.FormatFloat(ff.Float64, 'f', -1, 64)), nil
 }
 
 // NBool can be used to decode any JSON value to bool.
@@ -285,4 +308,11 @@ func (fb *NBool) UnmarshalJSON(bArr []byte) (err error) {
 	}
 
 	return
+}
+
+func (fb NBool) MarshalText() (text []byte, err error) {
+	if !fb.Valid {
+		return text, errors.Errorf("invalid ft.NFloat")
+	}
+	return []byte(strconv.FormatBool(fb.Bool)), nil
 }
