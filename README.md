@@ -19,19 +19,20 @@ type data struct {
 ```
 Above data struct can be used to un-marshal the following JSON
 ```json
-// b := []byte(`
 {
     "required": 123,
     "optional": null
 }
-// `)
 ```
-NULL is not considered valid
+NULL is not considered valid, for example
 ```go
+b := []byte(`{"required": 123,"optional": null}`)
 d := data{}
 err = json.Unmarshal(b, &d)
-fmt.Println(d.Required.Valid) // true
-fmt.Println(d.Optional.Valid) // false
+fmt.Println(d.Required.Valid)  // true
+fmt.Println(d.Required.String) // "123"
+fmt.Println(d.Optional.Valid)  // false
+fmt.Println(d.Optional.String) // ""
 ```
 
 Both custom types in this package, allowing NULL or not, embed structs with the same fields. For example
