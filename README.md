@@ -37,20 +37,22 @@ fmt.Println(d.Optional.String) // ""
 
 Both custom types in this package, allowing NULL or not, embed structs with the same fields. For example
 ```go
+// String
 s := ft.StringForm(123)
 fmt.Println(string(s.Valid)) // true
-fmt.Println(s.String) // 123
-
+fmt.Println(s.String)        // 123
+// NString
 s := ft.NStringForm(123)
 fmt.Println(string(s.Valid)) // true
-fmt.Println(s.String) // 123
+fmt.Println(s.String)        // 123
 ```
 
 After un-marshaling, the **Valid** field may be toggled by your custom validation code.
 
-Flexible types can be used with the [templating packages](https://gobyexample.com/text-templates). For example, either of the types above, could be used with this text template
-```
-{{if .Valid }} .String {{end}}
+Flexible types can be used with the [templating packages](https://gobyexample.com/text-templates). Either of the types above, **String** or **NString**, could be used in this text template example
+```go
+t1 = template.Must(t1.Parse(`{{if .Valid }} The value is .String {{end}}`))
+t1.Execute(os.Stdout, s) // The value is 123
 ```
 
 
