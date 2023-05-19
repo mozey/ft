@@ -19,18 +19,22 @@ type data struct {
 ```
 Above data struct can be used to un-marshal the following JSON
 ```json
+// b := []byte(`
 {
     "required": 123,
     "optional": null
 }
+// `)
 ```
 NULL is not considered valid
 ```go
-fmt.Println(data.Required.Valid) // true
-fmt.Println(data.Optional.Valid) // false
+d := data{}
+err = json.Unmarshal(b, &d)
+fmt.Println(d.Required.Valid) // true
+fmt.Println(d.Optional.Valid) // false
 ```
 
-Both custom types in this package, allowing NULL or not, have a *"consistent interface"*. The constructor function creates a struct with the same fields. For example
+Both custom types in this package, allowing NULL or not, embed structs with the same fields. For example
 ```go
 s := ft.StringForm(123)
 fmt.Println(string(s.Valid)) // true
@@ -40,6 +44,8 @@ s := ft.NStringForm(123)
 fmt.Println(string(s.Valid)) // true
 fmt.Println(s.String) // 123
 ```
+
+After un-marshaling, the **Valid** field may be toggled by your custom validation code.
 
 Flexible types can be used with the [templating packages](https://gobyexample.com/text-templates). For example, either of the types above, could be used with this text template
 ```
