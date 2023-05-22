@@ -102,8 +102,8 @@ func NIntFrom(fi int64) NInt {
 	return NInt(null.IntFrom(fi))
 }
 
-// IntFromString returns an Int for the given string
-func IntFromString(s string) (NInt, error) {
+// NIntFromString returns an Int for the given string
+func NIntFromString(s string) (NInt, error) {
 	i, err := strconv.ParseInt(s, 10, 64)
 	if err != nil {
 		return NInt{}, err
