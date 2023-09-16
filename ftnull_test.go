@@ -563,4 +563,9 @@ func TestNMapKeys(t *testing.T) {
 	_, err = json.Marshal(d)
 	is.Equal(err.Error(),
 		wrap("NBool", "invalid ft.NBool")) // Map keys must be valid
+
+	b = []byte(`{"StringMap":{"foo":true},"IntMap":{"123":true},"BoolMap":{"true":true},"FloatMap":{"1.618":true}}`)
+	d = data{}
+	err = json.Unmarshal(b, &d)
+	is.NoErr(err)
 }
