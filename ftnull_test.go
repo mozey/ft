@@ -435,16 +435,16 @@ func TestNMarshalToJSON(t *testing.T) {
 	is.NoErr(err)
 	is.Equal(`{"string":"","int":0,"bool":false,"float":0}`, string(b))
 
-	// Missing properties marshal to null.
-	// This is different from un-marshal
-	// where missing or null values are set to empty
+	// Missing (empty) properties marshal to null.
+	// Consider, unmarshal sets missing or null values to empty,
+	// and the Valid flag to false.
 	d = Data{}
 	b, err = json.Marshal(d)
 	is.NoErr(err)
 	is.Equal(`{"string":null,"int":null,"bool":null,"float":null}`, string(b))
 
 	// Missing properties are marshaled as null.
-	// Marshal does not output the same as input to un-marshal
+	// Note that marshal does not output the same as input to unmarshal
 	err = json.Unmarshal([]byte("{}"), &d)
 	is.NoErr(err)
 	b, err = json.Marshal(d)
@@ -473,6 +473,29 @@ func TestNMarshalToJSON(t *testing.T) {
 	b, err = json.Marshal(d2)
 	is.NoErr(err)
 	is.Equal(`{"string":null,"int":null,"bool":null,"float":null}`, string(b))
+
+	type Data3 struct {
+		String ft.NString
+		Int    ft.NInt
+		Bool   ft.NBool
+		Float  ft.NFloat
+	}
+	d3 := Data3{
+		String: ft.NString{
+			NullString: sql.NullString{String: "foo", Valid: false}},
+		Int: ft.NInt{
+			NullInt64: sql.NullInt64{Int64: 123, Valid: false}},
+		Bool: ft.NBool{
+			NullBool: sql.NullBool{Bool: false, Valid: false}},
+		Float: ft.NFloat{
+			NullFloat64: sql.NullFloat64{Float64: 1.618, Valid: false}},
+	}
+	b, err = json.Marshal(d3)
+	is.NoErr(err)
+	is.Equal(
+		string(b),
+		`{"String":null,"Int":null,"Bool":null,"Float":null}`,
+	) // Invalid values are marshalled to JSON as null
 }
 
 func TestNTextTemplate(t *testing.T) {
@@ -563,29 +586,6 @@ func TestNMapKeys(t *testing.T) {
 	_, err = json.Marshal(d)
 	is.Equal(err.Error(),
 		wrap("NBool", "invalid ft.NBool")) // Map keys must be valid
-
-	type data2 struct {
-		String ft.NString
-		Int    ft.NInt
-		Bool   ft.NBool
-		Float  ft.NFloat
-	}
-	d2 := data2{
-		String: ft.NString{
-			NullString: sql.NullString{String: "foo", Valid: false}},
-		Int: ft.NInt{
-			NullInt64: sql.NullInt64{Int64: 123, Valid: false}},
-		Bool: ft.NBool{
-			NullBool: sql.NullBool{Bool: false, Valid: false}},
-		Float: ft.NFloat{
-			NullFloat64: sql.NullFloat64{Float64: 1.618, Valid: false}},
-	}
-	b, err = json.Marshal(d2)
-	is.NoErr(err)
-	is.Equal(
-		string(b),
-		`{"String":null,"Int":null,"Bool":null,"Float":null}`,
-	) // Invalid values are marshalled to JSON as null
 
 	b = []byte(`{"StringMap":{"foo":true},"IntMap":{"123":true},"BoolMap":{"true":true},"FloatMap":{"1.618":true}}`)
 	d = data{}

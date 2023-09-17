@@ -3,7 +3,6 @@ package ft_test
 import (
 	"bytes"
 	"encoding/json"
-	"fmt"
 	"testing"
 	"text/template"
 
@@ -334,10 +333,10 @@ func TestTextTemplate(t *testing.T) {
 	}
 
 	tpl := template.Must(template.New("tpl").Parse(`
-{{if .Name.Valid }}Name: {{.Name.String}}{{end}}
-{{if .Number.Valid }}Number: {{.Number.Int64}}{{end}}
-{{if .Active.Valid }}Active: {{.Active.Bool}}{{end}}
-{{if .Measurement.Valid }}Measurement: {{.Measurement.Float64}}{{end}}`))
+Name: {{.Name.String}}
+Number: {{.Number.Int64}}
+Active: {{.Active.Bool}}
+Measurement: {{.Measurement.Float64}}`))
 
 	buf := bytes.NewBufferString("")
 	d := data{
@@ -346,7 +345,6 @@ func TestTextTemplate(t *testing.T) {
 		Active:      ft.BoolFrom(true),
 		Measurement: ft.FloatFrom(1.618),
 	}
-	is.Equal(true, d.Number.Valid)
 	err := tpl.Execute(buf, d)
 	is.NoErr(err)
 
@@ -383,53 +381,25 @@ func TestMapKeys(t *testing.T) {
 
 	is.Equal(string(b), `{"StringMap":{"foo":true},"IntMap":{"123":true},"BoolMap":{"true":true},"FloatMap":{"1.618":true}}`)
 
-	wrap := func(s1, s2 string) string {
-		return fmt.Sprintf(
-			`json: encoding error for type "map[ft.%s]bool": "%s"`, s1, s2)
-	}
-
 	d = data{StringMap: make(map[ft.String]bool)}
-	d.StringMap[ft.String{String: "", Valid: false}] = true
+	d.StringMap[ft.String{String: ""}] = true
 	_, err = json.Marshal(d)
-	is.Equal(err.Error(),
-		wrap("String", "invalid ft.String")) // Map keys must be valid
+	is.NoErr(err) // Empty value is allowed
 
 	d = data{IntMap: make(map[ft.Int]bool)}
-	d.IntMap[ft.Int{Int64: 0, Valid: false}] = true
+	d.IntMap[ft.Int{Int64: 0}] = true
 	_, err = json.Marshal(d)
-	is.Equal(err.Error(),
-		wrap("Int", "invalid ft.Int")) // Map keys must be valid
+	is.NoErr(err) // Empty value is allowed
 
 	d = data{FloatMap: make(map[ft.Float]bool)}
-	d.FloatMap[ft.Float{Float64: 0, Valid: false}] = true
+	d.FloatMap[ft.Float{Float64: 0}] = true
 	_, err = json.Marshal(d)
-	is.Equal(err.Error(),
-		wrap("Float", "invalid ft.Float")) // Map keys must be valid
+	is.NoErr(err) // Empty value is allowed
 
 	d = data{BoolMap: make(map[ft.Bool]bool)}
-	d.BoolMap[ft.Bool{Bool: false, Valid: false}] = true
+	d.BoolMap[ft.Bool{Bool: false}] = true
 	_, err = json.Marshal(d)
-	is.Equal(err.Error(),
-		wrap("Bool", "invalid ft.Bool")) // Map keys must be valid
-
-	type data2 struct {
-		String ft.String
-		Int    ft.Int
-		Bool   ft.Bool
-		Float  ft.Float
-	}
-	d2 := data2{
-		String: ft.String{String: "foo", Valid: false},
-		Int:    ft.Int{Int64: 123, Valid: false},
-		Bool:   ft.Bool{Bool: false, Valid: false},
-		Float:  ft.Float{Float64: 1.618, Valid: false},
-	}
-	b, err = json.Marshal(d2)
-	is.NoErr(err)
-	is.Equal(
-		string(b),
-		`{"String":"foo","Int":123,"Bool":false,"Float":1.618}`,
-	) // Invalid values are marshalled to JSON as is
+	is.NoErr(err) // Empty value is allowed
 
 	b = []byte(`{"StringMap":{"foo":true},"IntMap":{"123":true},"BoolMap":{"true":true},"FloatMap":{"1.618":true}}`)
 	d = data{}

@@ -12,16 +12,10 @@ import (
 // String can be used to decode any JSON value to string
 type String struct {
 	String string
-	Valid  bool
 }
 
 func StringFrom(fs string) String {
-	// Always valid on construction,
-	// but the flag may be toggled to false,
-	// or set to false when the type is constructed as a literal.
-	// Validation logic may also make use of this flag,
-	// for example, maybe the empty value is not considered valid
-	return String{String: fs, Valid: true}
+	return String{String: fs}
 }
 
 // MarshalJSON method with value receiver for String
@@ -78,9 +72,6 @@ func (fs *String) UnmarshalJSON(bArr []byte) (err error) {
 // https://pkg.go.dev/encoding#TextMarshaler
 
 func (fs String) MarshalText() (text []byte, err error) {
-	if !fs.Valid {
-		return text, errors.Errorf("invalid ft.String")
-	}
 	return []byte(fs.String), nil
 }
 
@@ -93,11 +84,10 @@ func (fs *String) UnmarshalText(text []byte) error {
 // Boolean values will error
 type Int struct {
 	Int64 int64
-	Valid bool
 }
 
 func IntFrom(fi int64) Int {
-	return Int{Int64: fi, Valid: true}
+	return Int{Int64: fi}
 }
 
 // MarshalJSON method for Int
@@ -151,9 +141,6 @@ func (fi *Int) UnmarshalJSON(bArr []byte) (err error) {
 }
 
 func (fi Int) MarshalText() (text []byte, err error) {
-	if !fi.Valid {
-		return text, errors.Errorf("invalid ft.Int")
-	}
 	return []byte(strconv.FormatInt(fi.Int64, 10)), nil
 }
 
@@ -166,11 +153,10 @@ func (fi *Int) UnmarshalText(text []byte) error {
 // Boolean values will error
 type Float struct {
 	Float64 float64
-	Valid   bool
 }
 
 func FloatFrom(ff float64) Float {
-	return Float{Float64: ff, Valid: true}
+	return Float{Float64: ff}
 }
 
 // MarshalJSON method for Float
@@ -224,9 +210,6 @@ func (ff *Float) UnmarshalJSON(bArr []byte) (err error) {
 }
 
 func (ff Float) MarshalText() (text []byte, err error) {
-	if !ff.Valid {
-		return text, errors.Errorf("invalid ft.Float")
-	}
 	return []byte(strconv.FormatFloat(ff.Float64, 'f', -1, 64)), nil
 }
 
@@ -240,12 +223,11 @@ func (ff *Float) UnmarshalText(text []byte) error {
 // Numbers equal to 0 will evaluate to false,
 // all other numbers are true.
 type Bool struct {
-	Bool  bool
-	Valid bool
+	Bool bool
 }
 
 func BoolFrom(fb bool) Bool {
-	return Bool{Bool: fb, Valid: true}
+	return Bool{Bool: fb}
 }
 
 // MarshalJSON method for Bool
@@ -306,9 +288,6 @@ func (fb *Bool) UnmarshalJSON(bArr []byte) (err error) {
 }
 
 func (fb Bool) MarshalText() (text []byte, err error) {
-	if !fb.Valid {
-		return text, errors.Errorf("invalid ft.Bool")
-	}
 	return []byte(strconv.FormatBool(fb.Bool)), nil
 }
 
