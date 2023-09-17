@@ -564,8 +564,35 @@ func TestNMapKeys(t *testing.T) {
 	is.Equal(err.Error(),
 		wrap("NBool", "invalid ft.NBool")) // Map keys must be valid
 
+	type data2 struct {
+		String ft.NString
+		Int    ft.NInt
+		Bool   ft.NBool
+		Float  ft.NFloat
+	}
+	d2 := data2{
+		String: ft.NString{
+			NullString: sql.NullString{String: "foo", Valid: false}},
+		Int: ft.NInt{
+			NullInt64: sql.NullInt64{Int64: 123, Valid: false}},
+		Bool: ft.NBool{
+			NullBool: sql.NullBool{Bool: false, Valid: false}},
+		Float: ft.NFloat{
+			NullFloat64: sql.NullFloat64{Float64: 1.618, Valid: false}},
+	}
+	b, err = json.Marshal(d2)
+	is.NoErr(err)
+	is.Equal(
+		string(b),
+		`{"String":null,"Int":null,"Bool":null,"Float":null}`,
+	) // Invalid values are marshalled to JSON as null
+
 	b = []byte(`{"StringMap":{"foo":true},"IntMap":{"123":true},"BoolMap":{"true":true},"FloatMap":{"1.618":true}}`)
 	d = data{}
 	err = json.Unmarshal(b, &d)
 	is.NoErr(err)
+
+	compare, err := json.Marshal(d)
+	is.NoErr(err)
+	is.Equal(string(b), string(compare)) // Unmarshal and Marshal doesn't match
 }

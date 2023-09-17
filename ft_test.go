@@ -429,10 +429,14 @@ func TestMapKeys(t *testing.T) {
 	is.Equal(
 		string(b),
 		`{"String":"foo","Int":123,"Bool":false,"Float":1.618}`,
-	) // Invalid values are marshalled to JSON
+	) // Invalid values are marshalled to JSON as is
 
 	b = []byte(`{"StringMap":{"foo":true},"IntMap":{"123":true},"BoolMap":{"true":true},"FloatMap":{"1.618":true}}`)
 	d = data{}
 	err = json.Unmarshal(b, &d)
 	is.NoErr(err)
+
+	compare, err := json.Marshal(d)
+	is.NoErr(err)
+	is.Equal(string(b), string(compare)) // Unmarshal and Marshal doesn't match
 }
