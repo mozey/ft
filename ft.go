@@ -73,13 +73,19 @@ func (fs *String) UnmarshalJSON(bArr []byte) (err error) {
 	return
 }
 
-// MarshalText must be implemented for custom types to be used as JSON map keys
-// https://stackoverflow.com/a/52161688/639133
+// TextMarshaler and TextUnmarshaler interfaces
+// must be implemented for custom types to be used as JSON map keys
+// https://pkg.go.dev/encoding#TextMarshaler
+
 func (fs String) MarshalText() (text []byte, err error) {
 	if !fs.Valid {
 		return text, errors.Errorf("invalid ft.String")
 	}
 	return []byte(fs.String), nil
+}
+
+func (fs *String) UnmarshalText(text []byte) error {
+	return fs.UnmarshalJSON(text)
 }
 
 // Int can be used to decode any JSON value to int64.
@@ -151,6 +157,10 @@ func (fi Int) MarshalText() (text []byte, err error) {
 	return []byte(strconv.FormatInt(fi.Int64, 10)), nil
 }
 
+func (fi *Int) UnmarshalText(text []byte) error {
+	return fi.UnmarshalJSON(text)
+}
+
 // Float can be used to decode any JSON value to int64.
 // Strings that are not valid representation of a number will error.
 // Boolean values will error
@@ -218,6 +228,10 @@ func (ff Float) MarshalText() (text []byte, err error) {
 		return text, errors.Errorf("invalid ft.Float")
 	}
 	return []byte(strconv.FormatFloat(ff.Float64, 'f', -1, 64)), nil
+}
+
+func (ff *Float) UnmarshalText(text []byte) error {
+	return ff.UnmarshalJSON(text)
 }
 
 // Bool can be used to decode any JSON value to bool.
@@ -296,4 +310,8 @@ func (fb Bool) MarshalText() (text []byte, err error) {
 		return text, errors.Errorf("invalid ft.Bool")
 	}
 	return []byte(strconv.FormatBool(fb.Bool)), nil
+}
+
+func (fb *Bool) UnmarshalText(text []byte) error {
+	return fb.UnmarshalJSON(text)
 }
