@@ -69,11 +69,17 @@ go clean -testcache && go test -v ./...
 
 ## Reference
 
-[1] Not quite the same concept as [Flexible typing in SQLite](https://www.sqlite.org/flextypegood.html). Note that *"as of SQLite version 3.37.0 (2021-11-27), SQLite supports this development style [Rigid Type Enforcement] using [STRICT tables](https://www.sqlite.org/stricttables.html)"*
+### [1] 
+
+Not quite the same concept as [Flexible typing in SQLite](https://www.sqlite.org/flextypegood.html). Note that *"as of SQLite version 3.37.0 (2021-11-27), SQLite supports this development style [Rigid Type Enforcement] using [STRICT tables](https://www.sqlite.org/stricttables.html)"*
 
 [Previously](https://github.com/mozey/fuzzy) this repo used the term *"fuzzy types"*. It was renamed, and the term replaced with *"flexible types"*. To avoid confusion with [fuzzing](https://go.dev/security/fuzz/), a new feature added to the *"standard toolchain beginning in Go 1.18"*
 
-[2] [JSON spec](https://www.json.org/json-en.html)
+### [2] 
 
-[3] This repo does not use [generics](https://go.dev/doc/tutorial/generics), and will compile with older versions of Go
+[JSON spec](https://www.json.org/json-en.html)
+
+### [3] 
+
+This repo does not use [generics](https://go.dev/doc/tutorial/generics), and will compile with older versions of Go
 
