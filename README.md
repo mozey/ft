@@ -25,7 +25,7 @@ For example, a webhook endpoint might want to accept POST requests with body:
 }
 ```
 
-Further validation can then be done after un-marshaling
+Validation can then be done after un-marshaling
 
 
 ## Usage
